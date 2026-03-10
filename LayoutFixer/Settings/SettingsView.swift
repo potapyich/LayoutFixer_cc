@@ -29,8 +29,8 @@ struct SettingsView: View {
                         LoginItemManager.shared.setEnabled(newValue)
                     }
             }
-            Section("Language") {
-                Text("RU ↔ EN")
+            Section("Language Cycle") {
+                LanguageOrderView()
             }
         }
         .formStyle(.grouped)

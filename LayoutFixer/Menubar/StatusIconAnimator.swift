@@ -8,15 +8,14 @@ class StatusIconAnimator {
         self.statusItem = statusItem
     }
 
-    func animateSuccess(resultLanguage: ConversionDirection) {
+    /// Shows the target layout's flag, blinks twice, then restores the default icon.
+    func animateSuccess(targetLayout: LayoutInfo) {
         pendingTask?.cancel()
 
-        let flagImage = Self.flagImage(for: resultLanguage)
+        let flagImage    = Self.flagImage(emoji: targetLayout.flag)
         let defaultImage = Self.defaultIcon()
 
-        // Blink: flag → default → flag → default (2 cycles, 400 ms each)
         statusItem?.button?.image = flagImage
-
         schedule(after: 0.4) { [weak self] in self?.statusItem?.button?.image = defaultImage }
         schedule(after: 0.7) { [weak self] in self?.statusItem?.button?.image = flagImage }
 
@@ -38,16 +37,13 @@ class StatusIconAnimator {
         return img ?? NSImage()
     }
 
-    private static func flagImage(for direction: ConversionDirection) -> NSImage {
-        // Render the country flag emoji as a small bitmap — works in any macOS theme.
-        let emoji = direction == .enToRu ? "🇷🇺" : "🇺🇸"
+    static func flagImage(emoji: String) -> NSImage {
         let size: CGFloat = 18
         let attrs: [NSAttributedString.Key: Any] = [.font: NSFont.systemFont(ofSize: size * 0.85)]
         let textSize = (emoji as NSString).size(withAttributes: attrs)
-
         return NSImage(size: NSSize(width: size, height: size), flipped: false) { rect in
             (emoji as NSString).draw(
-                at: NSPoint(x: (rect.width - textSize.width) / 2,
+                at: NSPoint(x: (rect.width  - textSize.width)  / 2,
                             y: (rect.height - textSize.height) / 2),
                 withAttributes: attrs
             )

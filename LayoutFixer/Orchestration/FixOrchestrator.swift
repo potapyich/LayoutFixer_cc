@@ -11,11 +11,16 @@ class FixOrchestrator {
     private let axWriter: AXTextWriter
     private let clipboard: ClipboardManager
     private let converter: LayoutConverter
-    private let detector: DirectionDetector
     private let soundPlayer: SoundPlayer
     var statusIconAnimator: StatusIconAnimator?
 
+    private let cycleManager = LayoutCycleManager()
     private var isFirstPermissionDenial = true
+    /// Prevents concurrent trigger() executions.
+    /// Safe without a lock because the whole class is @MainActor:
+    /// the flag is read/written on the main actor, and each `await` suspension
+    /// returns to the main actor before any other code can run here.
+    private var isConverting = false
 
     private let logger = Logger(subsystem: "com.yourname.LayoutSwitcherCC", category: "Orchestration")
 
@@ -26,7 +31,6 @@ class FixOrchestrator {
         axWriter: AXTextWriter,
         clipboard: ClipboardManager,
         converter: LayoutConverter,
-        detector: DirectionDetector,
         soundPlayer: SoundPlayer
     ) {
         self.settings = settings
@@ -35,11 +39,19 @@ class FixOrchestrator {
         self.axWriter = axWriter
         self.clipboard = clipboard
         self.converter = converter
-        self.detector = detector
         self.soundPlayer = soundPlayer
     }
 
+    // MARK: - Entry point
+
     func trigger() async {
+        guard !isConverting else {
+            logger.debug("Conversion in progress — ignoring rapid hotkey press")
+            return
+        }
+        isConverting = true
+        defer { isConverting = false }
+
         logger.debug("Hotkey triggered")
 
         guard axPermission.isGranted() else {
@@ -51,137 +63,143 @@ class FixOrchestrator {
             return
         }
 
+        guard let pair = cycleManager.currentPair(settings: settings) else {
+            logger.debug("No layout pair — add at least 2 layouts in Settings")
+            return
+        }
+
+        logger.debug("Converting: \(pair.sourceID) → \(pair.targetID)")
+
         guard let element = axReader.focusedElement() else {
             logger.debug("No focused element")
             return
         }
 
-        // Try direct AX read path first (native apps: TextEdit, Safari, etc.)
+        // ── AX path (native apps: TextEdit, Safari, …) ──────────────────────────
         if let selRange = axReader.selectionRange(of: element), selRange.length > 0 {
             guard let selectedText = axReader.selectedText(of: element),
                   !selectedText.isEmpty else {
-                await keyboardFallback()
+                await keyboardFallback(pair: pair)
                 return
             }
-            await finishConversion(text: selectedText, range: selRange, element: element)
+            await finishAX(text: selectedText, range: selRange, element: element, pair: pair)
 
         } else if let (word, range) = axReader.lastWord(of: element) {
-            await finishConversion(text: word, range: range, element: element)
+            await finishAX(text: word, range: range, element: element, pair: pair)
 
         } else {
-            // AX read failed (Electron/CEF apps like VS Code)
+            // ── Keyboard+clipboard fallback (Electron/CEF) ─────────────────────
             logger.debug("AX read failed, using keyboard+clipboard fallback")
-            await keyboardFallback()
+            await keyboardFallback(pair: pair)
         }
     }
 
-    // MARK: - AX write path (native apps)
+    // MARK: - AX write path
 
-    private func finishConversion(text: String, range: CFRange, element: AXUIElement) async {
-        guard let direction = detector.detectDirection(text) else {
-            logger.debug("Could not detect direction for: \(text)")
+    private func finishAX(text: String, range: CFRange,
+                          element: AXUIElement, pair: LayoutCycleManager.Pair) async {
+        let converted = normalize(converter.convert(text, from: pair.sourceID, to: pair.targetID))
+        guard converted != text else {
+            logger.debug("Conversion produced no change — no mapping for this pair?")
             return
         }
 
-        var converted = converter.convert(text, direction: direction)
-        while converted.hasSuffix("\n") || converted.hasSuffix("\r") {
-            converted = String(converted.dropLast())
-        }
+        let ok = axWriter.write(convertedText: converted, replacing: range, in: element)
+        if !ok { clipboard.writeAndPaste(text: converted) }
 
-        let writeSuccess = axWriter.write(convertedText: converted, replacing: range, in: element)
-        if !writeSuccess {
-            clipboard.writeAndPaste(text: converted)
-        }
-
-        feedback(direction: direction)
+        feedback(pair: pair)
         logger.debug("AX conversion: \(text) → \(converted)")
     }
 
-    // MARK: - Keyboard + clipboard fallback (Electron/CEF apps)
+    // MARK: - Keyboard + clipboard fallback
 
-    /// Two-phase strategy that avoids relying on unreliable AX selectedText attribute:
-    ///
-    /// Phase 1 — try ⌘C immediately.
-    ///   VS Code copies current selection to clipboard without modifying the selection.
-    ///   If the clipboard changed and the result looks like a real selection (non-empty,
-    ///   no trailing newline — VS Code's "copy whole line" always appends \n), use it.
-    ///
-    /// Phase 2 — if Phase 1 gave nothing useful, select the previous word with ⌥⇧←
-    ///   then ⌘C again (last-word mode).
-    private func keyboardFallback() async {
+    /// Phase 1: ⌘C — captures an existing user selection.
+    ///   VS Code/Electron line-copy always ends with \n, so we reject those.
+    /// Phase 2: ⌥⇧← + ⌘C — selects the previous word (last-word mode).
+    private func keyboardFallback(pair: LayoutCycleManager.Pair) async {
         let savedClipboard = clipboard.saveClipboard()
 
-        // ── Phase 1: copy whatever is currently selected ──────────────────────────
-        let preCount1 = NSPasteboard.general.changeCount
+        // ── Phase 1 ────────────────────────────────────────────────────────────
+        let pre1 = NSPasteboard.general.changeCount
         postKey(keyCode: 8, flags: .maskCommand) // ⌘C
         try? await Task.sleep(nanoseconds: 150_000_000)
 
-        if let word = clipboardString(ifChangedFrom: preCount1),
-           !word.hasSuffix("\n"), !word.hasSuffix("\r"),  // VS Code "copy line" always ends with \n
-           let direction = detector.detectDirection(word) {
-
+        if let word = clipboardString(ifChangedFrom: pre1),
+           !word.hasSuffix("\n"), !word.hasSuffix("\r") {
             logger.debug("Keyboard fallback (selection): \(word)")
-            await pasteConverted(word: word, direction: direction, savedClipboard: savedClipboard)
+            await pasteConverted(word: word, pair: pair, savedClipboard: savedClipboard)
             return
         }
 
-        // ── Phase 2: no usable selection — select previous word ───────────────────
-        let preCount2 = NSPasteboard.general.changeCount
+        // ── Phase 2 ────────────────────────────────────────────────────────────
+        let pre2 = NSPasteboard.general.changeCount
         postKey(keyCode: 123, flags: [.maskAlternate, .maskShift]) // ⌥⇧←
         try? await Task.sleep(nanoseconds: 80_000_000)
         postKey(keyCode: 8, flags: .maskCommand) // ⌘C
         try? await Task.sleep(nanoseconds: 150_000_000)
 
-        guard let word = clipboardString(ifChangedFrom: preCount2),
-              !word.isEmpty,
-              let direction = detector.detectDirection(word) else {
+        guard let word = clipboardString(ifChangedFrom: pre2), !word.isEmpty else {
             logger.debug("Keyboard fallback: nothing to convert")
-            postKey(keyCode: 124, flags: []) // ⇒ collapse the ⌥⇧← selection
+            postKey(keyCode: 124, flags: []) // ⇒ collapse ⌥⇧← selection
             clipboard.restoreClipboard(savedClipboard)
             return
         }
 
         logger.debug("Keyboard fallback (last word): \(word)")
-        await pasteConverted(word: word, direction: direction, savedClipboard: savedClipboard)
+        await pasteConverted(word: word, pair: pair, savedClipboard: savedClipboard)
     }
 
-    private func pasteConverted(word: String, direction: ConversionDirection,
+    private func pasteConverted(word: String, pair: LayoutCycleManager.Pair,
                                 savedClipboard: [[NSPasteboard.PasteboardType: Data]]) async {
-        var converted = converter.convert(word, direction: direction)
-        while converted.hasSuffix("\n") || converted.hasSuffix("\r") {
-            converted = String(converted.dropLast())
+        let converted = normalize(converter.convert(word, from: pair.sourceID, to: pair.targetID))
+        guard converted != word else {
+            logger.debug("Conversion produced no change for '\(word)' (\(pair.sourceID)→\(pair.targetID))")
+            clipboard.restoreClipboard(savedClipboard)
+            return
         }
 
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(converted, forType: .string)
-        postKey(keyCode: 9, flags: .maskCommand) // ⌘V
-
+        // Type directly — avoids ⌘V cursor-to-beginning issues in Electron apps.
+        typeText(converted)
         clipboard.restoreClipboard(savedClipboard)
 
-        feedback(direction: direction)
+        feedback(pair: pair)
         logger.debug("Keyboard fallback: \(word) → \(converted)")
     }
 
     // MARK: - Helpers
 
-    /// Returns the clipboard string only if the changeCount increased (i.e. ⌘C actually wrote something).
-    private func clipboardString(ifChangedFrom preCount: Int) -> String? {
-        guard NSPasteboard.general.changeCount != preCount else { return nil }
+    private func normalize(_ text: String) -> String {
+        var s = text
+        while s.hasSuffix("\n") || s.hasSuffix("\r") { s = String(s.dropLast()) }
+        return s
+    }
+
+    private func typeText(_ text: String) {
+        var utf16 = Array(text.utf16)
+        let src  = CGEventSource(stateID: .hidSystemState)
+        let down = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: true)
+        let up   = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: false)
+        down?.keyboardSetUnicodeString(stringLength: utf16.count, unicodeString: &utf16)
+        up?.keyboardSetUnicodeString(stringLength: utf16.count, unicodeString: &utf16)
+        down?.post(tap: .cgAnnotatedSessionEventTap)
+        up?.post(tap: .cgAnnotatedSessionEventTap)
+    }
+
+    private func clipboardString(ifChangedFrom pre: Int) -> String? {
+        guard NSPasteboard.general.changeCount != pre else { return nil }
         return NSPasteboard.general.string(forType: .string)
     }
 
-    private let inputSwitcher = InputSourceSwitcher()
-
-    private func feedback(direction: ConversionDirection) {
-        inputSwitcher.switchTo(direction)
+    private func feedback(pair: LayoutCycleManager.Pair) {
+        InputSourceManager.shared.switchTo(layoutID: pair.targetID)
         if settings.soundEnabled {
             soundPlayer.play(name: settings.soundName, volume: settings.soundVolume)
         }
-        statusIconAnimator?.animateSuccess(resultLanguage: direction)
+        statusIconAnimator?.animateSuccess(targetLayout: pair.target)
     }
 
     private func postKey(keyCode: CGKeyCode, flags: CGEventFlags) {
-        let src = CGEventSource(stateID: .hidSystemState)
+        let src  = CGEventSource(stateID: .hidSystemState)
         let down = CGEvent(keyboardEventSource: src, virtualKey: keyCode, keyDown: true)
         let up   = CGEvent(keyboardEventSource: src, virtualKey: keyCode, keyDown: false)
         down?.flags = flags

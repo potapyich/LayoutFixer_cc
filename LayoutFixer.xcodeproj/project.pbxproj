@@ -14,6 +14,7 @@
 		2434C3101985E2045AC03FAE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F0D40BF3F43D57926A7446A /* Assets.xcassets */; };
 		2DA7A9E318DB99964B45A4A6 /* InputSourceSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A75B491755B01823898014D /* InputSourceSwitcher.swift */; };
 		40F2698E91A2C23729E597B7 /* FixOrchestrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466F4B2CA5594A42674E7B52 /* FixOrchestrator.swift */; };
+		4400C9674184A6F9D76FC575 /* LayoutCycleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2E6D86CC60EAA849A3AA8D /* LayoutCycleManager.swift */; };
 		4A32B4DEECAF7A7B35EA219F /* LoginItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 009E789DA0CC7ECA8069A5B7 /* LoginItemManager.swift */; };
 		5A5E3E0DC77AF08D7535E5C6 /* HotkeyDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7751818FB1FDFE43E8F748EC /* HotkeyDefinition.swift */; };
 		5D70401A20D8B73289DB6049 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90BA3406AC9B677B93A4766 /* AppDelegate.swift */; };
@@ -25,6 +26,7 @@
 		6BE4E05CC5D08BBB661D79E1 /* LayoutMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE4784D2CFA3B5E212876 /* LayoutMapping.swift */; };
 		8C105E76E6CD0624D2F35D1B /* DirectionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE1DCD6716015B73C03DC4A /* DirectionDetector.swift */; };
 		8C644036F266CF6A79BBE7DF /* DirectionDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EE1DCD6716015B73C03DC4A /* DirectionDetector.swift */; };
+		8D19E036A58AFE3C92727531 /* LanguageOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22033F27BB0F737EC54113EF /* LanguageOrderView.swift */; };
 		90B59C3D26FFA29076F7C093 /* LayoutMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378AE4784D2CFA3B5E212876 /* LayoutMapping.swift */; };
 		98875F4FF6BCB2C6D946A30F /* AXTextWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD5CAFD282B4D50F51DBCDD /* AXTextWriter.swift */; };
 		A52E59ABC3D5A8D896268981 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E2F4288A0BC13021B79F52 /* SettingsView.swift */; };
@@ -32,18 +34,22 @@
 		AFDD7FADC4295C43E1F4FF8B /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C1E69B24F74B2AE953475F /* SoundPlayer.swift */; };
 		B278541C3E4AD90130B9F69F /* MenubarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B5B60177B7067F5D88B86D /* MenubarManager.swift */; };
 		B4C5D283956BA0B4948B8E6B /* HotkeyRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD38543F5EA00614507E4137 /* HotkeyRecorder.swift */; };
+		B8A71DE52740C0A436342B89 /* LayoutInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B90054099469406ABC7105 /* LayoutInfo.swift */; };
 		B9411FA41DCB43DD8208A4A9 /* LayoutMappingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4815D00182447F2035A095B2 /* LayoutMappingTests.swift */; };
 		BD04E29A8F139D62D634D105 /* LayoutConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A8DB784D1FEF65002BCB6D /* LayoutConverter.swift */; };
 		CFFD2E89E5440BF68A058688 /* LayoutConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A8DB784D1FEF65002BCB6D /* LayoutConverter.swift */; };
 		DB7A6DD9946DA5DBF4883E38 /* AXTextReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4B4360952911A7437015EB8 /* AXTextReader.swift */; };
+		E661DED948C260696E8E318B /* LayoutInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B90054099469406ABC7105 /* LayoutInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		009E789DA0CC7ECA8069A5B7 /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
 		18DA5476EB231FB21C6997D5 /* StatusIconAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusIconAnimator.swift; sourceTree = "<group>"; };
+		22033F27BB0F737EC54113EF /* LanguageOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageOrderView.swift; sourceTree = "<group>"; };
 		2A4DEA36631D5F265C46F4E0 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
 		2D6302533C79461DD1CBA89B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		2EE1DCD6716015B73C03DC4A /* DirectionDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionDetector.swift; sourceTree = "<group>"; };
+		35B90054099469406ABC7105 /* LayoutInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutInfo.swift; sourceTree = "<group>"; };
 		378AE4784D2CFA3B5E212876 /* LayoutMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutMapping.swift; sourceTree = "<group>"; };
 		3F0D40BF3F43D57926A7446A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41AD727FBC2D14BC81C54854 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
@@ -54,12 +60,13 @@
 		5492F0B306F6B43E82B1E521 /* LayoutConverterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutConverterTests.swift; sourceTree = "<group>"; };
 		75A8DB784D1FEF65002BCB6D /* LayoutConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutConverter.swift; sourceTree = "<group>"; };
 		7751818FB1FDFE43E8F748EC /* HotkeyDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyDefinition.swift; sourceTree = "<group>"; };
-		8820A4332ADA1291516455D9 /* LayoutSwitcher_CC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayoutSwitcher_CC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8820A4332ADA1291516455D9 /* LayoutFixer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayoutFixer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CD5CAFD282B4D50F51DBCDD /* AXTextWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextWriter.swift; sourceTree = "<group>"; };
 		920EF1C86216D2FB00A0E57E /* LayoutFixerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFixerApp.swift; sourceTree = "<group>"; };
 		9A75B491755B01823898014D /* InputSourceSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputSourceSwitcher.swift; sourceTree = "<group>"; };
 		B4B4360952911A7437015EB8 /* AXTextReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXTextReader.swift; sourceTree = "<group>"; };
 		B9C1E69B24F74B2AE953475F /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
+		BD2E6D86CC60EAA849A3AA8D /* LayoutCycleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCycleManager.swift; sourceTree = "<group>"; };
 		CC3F18C84E3AE1496A90B7A5 /* DirectionDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionDetectorTests.swift; sourceTree = "<group>"; };
 		E7C759F5F89D68049AEF7E34 /* AXPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXPermissionManager.swift; sourceTree = "<group>"; };
 		E90BA3406AC9B677B93A4766 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				2D6302533C79461DD1CBA89B /* AppSettings.swift */,
+				22033F27BB0F737EC54113EF /* LanguageOrderView.swift */,
 				F9E2F4288A0BC13021B79F52 /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -119,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				466F4B2CA5594A42674E7B52 /* FixOrchestrator.swift */,
+				BD2E6D86CC60EAA849A3AA8D /* LayoutCycleManager.swift */,
 			);
 			path = Orchestration;
 			sourceTree = "<group>";
@@ -153,7 +162,7 @@
 		4DEB6B096F49366CF2AE91B3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8820A4332ADA1291516455D9 /* LayoutSwitcher_CC.app */,
+				8820A4332ADA1291516455D9 /* LayoutFixer.app */,
 				F2B3B4A18285DCF998AA5A60 /* LayoutFixerTests.xctest */,
 			);
 			name = Products;
@@ -209,6 +218,7 @@
 			children = (
 				2EE1DCD6716015B73C03DC4A /* DirectionDetector.swift */,
 				75A8DB784D1FEF65002BCB6D /* LayoutConverter.swift */,
+				35B90054099469406ABC7105 /* LayoutInfo.swift */,
 				378AE4784D2CFA3B5E212876 /* LayoutMapping.swift */,
 			);
 			path = Conversion;
@@ -249,7 +259,7 @@
 			packageProductDependencies = (
 			);
 			productName = LayoutFixer;
-			productReference = 8820A4332ADA1291516455D9 /* LayoutSwitcher_CC.app */;
+			productReference = 8820A4332ADA1291516455D9 /* LayoutFixer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -259,7 +269,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					2B4DB7CE96A83D85392EFD8A = {
 						DevelopmentTeam = "";
@@ -313,6 +323,7 @@
 				6AADDD62DBAB84AD6111A9E3 /* HotkeyDefinitionTests.swift in Sources */,
 				BD04E29A8F139D62D634D105 /* LayoutConverter.swift in Sources */,
 				5E3358C78A388E0C025C5932 /* LayoutConverterTests.swift in Sources */,
+				B8A71DE52740C0A436342B89 /* LayoutInfo.swift in Sources */,
 				90B59C3D26FFA29076F7C093 /* LayoutMapping.swift in Sources */,
 				B9411FA41DCB43DD8208A4A9 /* LayoutMappingTests.swift in Sources */,
 			);
@@ -334,8 +345,11 @@
 				057BBDA337F738B109F4DAA1 /* HotkeyManager.swift in Sources */,
 				B4C5D283956BA0B4948B8E6B /* HotkeyRecorder.swift in Sources */,
 				2DA7A9E318DB99964B45A4A6 /* InputSourceSwitcher.swift in Sources */,
+				8D19E036A58AFE3C92727531 /* LanguageOrderView.swift in Sources */,
 				CFFD2E89E5440BF68A058688 /* LayoutConverter.swift in Sources */,
+				4400C9674184A6F9D76FC575 /* LayoutCycleManager.swift in Sources */,
 				0F7E664CF857C706119153BA /* LayoutFixerApp.swift in Sources */,
+				E661DED948C260696E8E318B /* LayoutInfo.swift in Sources */,
 				6BE4E05CC5D08BBB661D79E1 /* LayoutMapping.swift in Sources */,
 				4A32B4DEECAF7A7B35EA219F /* LoginItemManager.swift in Sources */,
 				B278541C3E4AD90130B9F69F /* MenubarManager.swift in Sources */,
@@ -410,7 +424,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.10;
@@ -491,7 +504,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.10;

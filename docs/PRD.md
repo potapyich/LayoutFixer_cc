@@ -557,3 +557,45 @@ Result → silent no-op
 - звука
 - изменения иконки
 - изменения clipboard
+
+---
+
+## 19. Language Management — Updated Design (v2)
+
+### Concept
+
+Instead of a hardcoded RU ↔ EN pair, the app reads all keyboard layouts available in macOS Input Sources and lets the user build an **ordered list** of layouts to cycle through.
+
+### Setup (Settings UI)
+
+1. App reads all layouts from macOS Input Sources
+2. User selects a subset and defines their order, e.g.: `[EN, RU, DE]`
+3. This ordered list is persisted in AppSettings
+
+### Conversion Logic
+
+On hotkey press:
+1. Read the **current active macOS input source**
+2. Find it in the user's ordered list
+3. Take the **next layout** in the list (wraps around cyclically)
+4. Convert the token from current layout → next layout
+5. (Optional) Switch the system input source to the target layout
+
+**Edge case:** if current system layout is not in the user's list → use the first layout in the list as source.
+
+### Example
+```
+User list:     [EN → RU → DE → EN → ...]
+System layout: RU
+
+Hotkey pressed → convert token RU→DE
+Next press     → convert token DE→EN
+Next press     → convert token EN→RU
+```
+
+### UI Requirements
+
+- Settings screen shows all available macOS Input Sources
+- User can add/remove layouts to their active list
+- User can reorder the list (drag & drop or up/down arrows)
+- Current active list is clearly visible in menubar menu

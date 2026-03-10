@@ -20,8 +20,29 @@ final class AppSettings {
     @ObservationIgnored
     @AppStorage("isEnabled") var isEnabled: Bool = true
 
+    @ObservationIgnored
+    @AppStorage("activeLayouts") private var activeLayoutsData: Data = Data()
+
+    // MARK: - Computed
+
     var hotkey: HotkeyDefinition {
         get { HotkeyDefinition.decode(from: hotkeyData) ?? .default }
         set { hotkeyData = newValue.encoded() }
+    }
+
+    /// Ordered list of layouts the user wants to cycle through.
+    /// Defaults to whatever macOS has installed (EN + first other language).
+    var activeLayouts: [LayoutInfo] {
+        get {
+            if !activeLayoutsData.isEmpty,
+               let decoded = try? JSONDecoder().decode([LayoutInfo].self, from: activeLayoutsData),
+               !decoded.isEmpty {
+                return decoded
+            }
+            return InputSourceManager.shared.suggestedDefaults()
+        }
+        set {
+            activeLayoutsData = (try? JSONEncoder().encode(newValue)) ?? Data()
+        }
     }
 }

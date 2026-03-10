@@ -15,7 +15,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let axWriter = AXTextWriter()
         let clipboard = ClipboardManager()
         let converter = LayoutConverter()
-        let detector = DirectionDetector()
         let soundPlayer = SoundPlayer()
 
         let orchestrator = FixOrchestrator(
@@ -25,7 +24,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             axWriter: axWriter,
             clipboard: clipboard,
             converter: converter,
-            detector: detector,
             soundPlayer: soundPlayer
         )
         self.orchestrator = orchestrator
