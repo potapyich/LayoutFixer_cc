@@ -17,6 +17,11 @@ class HotkeyManager {
         self.onTrigger = onTrigger
     }
 
+    var isEventTapActive: Bool {
+        guard let tap = eventTap else { return false }
+        return CGEvent.tapIsEnabled(tap: tap)
+    }
+
     func enable() {
         installTap()
         startWatchdog()
@@ -55,7 +60,7 @@ class HotkeyManager {
         ) else {
             retained.release()
             selfPtr = nil
-            logger.error("CGEvent.tapCreate returned nil")
+            logger.error("CGEvent.tapCreate failed — Accessibility or Input Monitoring permission missing")
             return
         }
 

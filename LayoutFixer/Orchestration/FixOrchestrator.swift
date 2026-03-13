@@ -59,10 +59,10 @@ class FixOrchestrator {
         isConverting = true
         defer { isConverting = false }
 
-        logger.debug("Hotkey triggered")
+        logger.info("Hotkey triggered")
 
         guard axPermission.isGranted() else {
-            logger.debug("AX permission not granted")
+            logger.info("AX permission not granted — skipping")
             if isFirstPermissionDenial {
                 isFirstPermissionDenial = false
                 axPermission.promptIfNeeded()
@@ -75,7 +75,7 @@ class FixOrchestrator {
             return
         }
 
-        logger.debug("Converting: \(pair.sourceID) → \(pair.targetID)")
+        logger.info("Converting: \(pair.sourceID) → \(pair.targetID)")
 
         guard let element = axReader.focusedElement() else {
             logger.debug("No focused element")
@@ -115,7 +115,7 @@ class FixOrchestrator {
         if !ok { clipboard.writeAndPaste(text: converted) }
 
         feedback(pair: pair)
-        logger.debug("AX conversion: \(text) → \(converted)")
+        logger.info("AX write ok=\(ok): \(text) → \(converted)")
     }
 
     // MARK: - Keyboard + clipboard fallback
@@ -188,7 +188,7 @@ class FixOrchestrator {
         clipboard.restoreClipboard(savedClipboard)
 
         feedback(pair: pair)
-        logger.debug("Keyboard fallback: \(word) → \(converted)")
+        logger.info("Keyboard fallback: \(word) → \(converted)")
     }
 
     // MARK: - Helpers

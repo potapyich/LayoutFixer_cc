@@ -9,6 +9,7 @@ struct LayoutFixerApp: App {
         Settings {
             SettingsView()
                 .environment(appDelegate.settings)
+                .environment(appDelegate)
         }
         .onChange(of: appDelegate.openSettingsTrigger) { _, _ in
             NSApp.activate(ignoringOtherApps: true)
