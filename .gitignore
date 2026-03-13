@@ -49,3 +49,5 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 .claude/
+
+releases/

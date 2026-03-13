@@ -117,10 +117,15 @@ class HotkeyManager {
         )
 
         if keyCode == hotkey.keyCode && relevantFlags == hotkey.modifierFlags {
-            logger.debug("Hotkey matched, consuming event")
-            let trigger = onTrigger
-            DispatchQueue.main.async {
-                trigger()
+            // Always consume the event (prevents the key character — e.g. å for ⌥A — from
+            // reaching the frontmost app), but only trigger conversion on the initial press.
+            // Key-repeat events (.keyboardEventAutorepeat != 0) are silently swallowed so
+            // the user holding the hotkey doesn't queue dozens of consecutive conversions.
+            let isRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0
+            if !isRepeat {
+                logger.debug("Hotkey matched, consuming event")
+                let trigger = onTrigger
+                DispatchQueue.main.async { trigger() }
             }
             return nil
         }

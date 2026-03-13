@@ -197,6 +197,14 @@ class FixOrchestrator {
         let src  = CGEventSource(stateID: .hidSystemState)
         let down = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: true)
         let up   = CGEvent(keyboardEventSource: src, virtualKey: 0, keyDown: false)
+        // Explicitly clear all modifier flags.
+        // CGEventSource(.hidSystemState) reflects the current hardware state, so if
+        // the user's hotkey modifier (e.g. ⌥) is still physically held, the event
+        // would inherit that flag. Without this clear, the event could be: virtualKey=0
+        // + maskAlternate = ⌥A, which our own tap would intercept and consume, silently
+        // eating the typed text instead of delivering it to the app.
+        down?.flags = []
+        up?.flags   = []
         down?.keyboardSetUnicodeString(stringLength: utf16.count, unicodeString: &utf16)
         up?.keyboardSetUnicodeString(stringLength: utf16.count, unicodeString: &utf16)
         down?.post(tap: .cgAnnotatedSessionEventTap)
