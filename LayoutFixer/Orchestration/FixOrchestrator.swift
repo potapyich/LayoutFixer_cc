@@ -182,11 +182,10 @@ class FixOrchestrator {
         await pasteConverted(word: word, pair: pair, savedClipboard: savedClipboard)
     }
 
-    /// Polls NSPasteboard.changeCount every 10 ms until it changes or 300 ms elapses.
-    /// Returns the new clipboard string immediately when the change is detected.
+    /// Polls NSPasteboard.changeCount every 10 ms until it changes or the configured timeout elapses.
     private func pollClipboard(ifChangedFrom before: Int) async -> String? {
-        let pollNs: UInt64 = 10_000_000   // 10 ms per tick
-        let maxTicks = 30                  // 30 × 10 ms = 300 ms max wait
+        let pollNs: UInt64 = 10_000_000
+        let maxTicks = max(1, settings.clipboardPollTimeoutMs / 10)
         for _ in 0..<maxTicks {
             if NSPasteboard.general.changeCount != before {
                 return NSPasteboard.general.string(forType: .string)

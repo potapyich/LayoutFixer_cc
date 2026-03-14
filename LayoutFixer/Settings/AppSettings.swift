@@ -20,6 +20,11 @@ final class AppSettings {
     @ObservationIgnored
     @AppStorage("isEnabled") var isEnabled: Bool = true
 
+    /// Maximum time to wait for the clipboard to change after posting ⌘C (milliseconds).
+    /// Lower values feel snappier; raise if replacement is unreliable on a slow machine.
+    @ObservationIgnored
+    @AppStorage("clipboardPollTimeoutMs") var clipboardPollTimeoutMs: Int = 100
+
     @ObservationIgnored
     @AppStorage("activeLayouts") private var activeLayoutsData: Data = Data()
 

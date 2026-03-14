@@ -51,6 +51,15 @@ struct SettingsView: View {
             Section("Language Cycle") {
                 LanguageOrderView()
             }
+            Section("Advanced") {
+                Picker("Clipboard timeout", selection: $settings.clipboardPollTimeoutMs) {
+                    Text("50 ms").tag(50)
+                    Text("100 ms (default)").tag(100)
+                    Text("200 ms").tag(200)
+                    Text("300 ms").tag(300)
+                }
+                .help("How long to wait for ⌘C to update the clipboard. Raise this if text replacement is unreliable.")
+            }
         }
         .formStyle(.grouped)
         .frame(width: 400)
