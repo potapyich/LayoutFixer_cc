@@ -52,11 +52,14 @@ struct SettingsView: View {
                 LanguageOrderView()
             }
             Section("Advanced") {
-                Picker("Clipboard timeout", selection: $settings.clipboardPollTimeoutMs) {
-                    Text("50 ms").tag(50)
-                    Text("100 ms (default)").tag(100)
-                    Text("200 ms").tag(200)
-                    Text("300 ms").tag(300)
+                HStack {
+                    Text("Clipboard timeout")
+                    Spacer()
+                    TextField("ms", value: $settings.clipboardPollTimeoutMs, format: .number)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 64)
+                    Text("ms")
+                        .foregroundStyle(.secondary)
                 }
                 .help("How long to wait for ⌘C to update the clipboard. Raise this if text replacement is unreliable.")
             }

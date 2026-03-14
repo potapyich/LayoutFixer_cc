@@ -133,9 +133,9 @@ class FixOrchestrator {
     ///   VS Code/Electron line-copy always ends with \n, so we reject those.
     /// Phase 2: ⌥⇧← + ⌘C — selects the previous word (last-word mode).
     ///
-    /// Both phases use clipboard-change polling (10 ms intervals, 300 ms max)
-    /// instead of a fixed 150 ms sleep — so the lock is released as soon as
-    /// the target app actually processes ⌘C, typically in 20–50 ms.
+    /// Both phases use clipboard-change polling (configurable timeout, default 100 ms)
+    /// instead of a fixed sleep — so the lock is released as soon as the target app
+    /// actually processes ⌘C, typically in 20–50 ms.
     private func keyboardFallback(pair: LayoutCycleManager.Pair) async {
         let savedClipboard = clipboard.saveClipboard()
 
